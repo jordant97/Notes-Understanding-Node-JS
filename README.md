@@ -1,6 +1,41 @@
 # Understanding-Node-JS
 Notes on the course Understanding Node JS by Tony Alicea
 
+## Table of Content
+
+<!-- TOC -->
+- [Understanding-Node-JS](#understanding-node-js)
+    - [Table of Content](#table-of-content)
+    - [Classes in Javascript](#classes-in-javascript)
+    - [Asynchronous Code, libuv, the event loop, stream files and more](#asynchronous-code-libuv-the-event-loop-stream-files-and-more)
+        - [Javascript Aside](#javascript-aside)
+    - [7. HTTP and being a Web Server](#7-http-and-being-a-web-server)
+        - [Protocol](#protocol)
+        - [TCP/IP](#tcpip)
+        - [Socket](#socket)
+        - [Port](#port)
+        - [HTTP](#http)
+        - [MIME Type](#mime-type)
+        - [API](#api)
+        - [Endpoint](#endpoint)
+        - [Serialize](#serialize)
+        - [Routing](#routing)
+        - [Template](#template)
+        - [How to create a server with node](#how-to-create-a-server-with-node)
+    - [8. NPM and Node Package Manager](#8-npm-and-node-package-manager)
+        - [Package](#package)
+        - [Package management system](#package-management-system)
+        - [Dependency](#dependency)
+        - [Versioning (Semantic versioning)](#versioning-semantic-versioning)
+        - [What is dev dependencies?](#what-is-dev-dependencies)
+    - [9. Express](#9-express)
+        - [Environment variables](#environment-variables)
+        - [HTTP method](#http-method)
+        - [Middleware](#middleware)
+        - [Static](#static)
+        - [How to setup a server using Express](#how-to-setup-a-server-using-express)
+
+<!-- /TOC -->
 ## Classes in Javascript
 - We understand that class in JS is just syntetic sugar to write a function constructor
 ```js
