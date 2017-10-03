@@ -8,6 +8,10 @@ Table of Content
     - [Things JS needed in order to manage a server](#things-js-needed-in-order-to-manage-a-server)
     - [Classes in Javascript](#classes-in-javascript)
     - [2. V8 The JS Engine](#2-v8-the-js-engine)
+        - [Machine code (Language)](#machine-code-language)
+        - [ECMAScript](#ecmascript)
+        - [Javascript Engine](#javascript-engine)
+        - [What is Node.JS??](#what-is-nodejs)
     - [4. Modules Exports and Require](#4-modules-exports-and-require)
         - [Module](#module)
         - [CommonJS Modules](#commonjs-modules)
@@ -119,7 +123,22 @@ class Police extends Person {
 - However, it is still different from what we used to know about classes in other programming languages. This is still prototypical inheritence.
 
 ## 2. V8 The JS Engine
+### Machine code (Language)
+- **Programming languages spoken by computer processors**
+- Every program you run on your computer has been converted (compiled) into machine code.
+- Whenever we wrote programming language, there are some process that convert what we wrote into machine code so the processor can understand.
 
+### ECMAScript
+- **The standard JS is based on**
+- Needed a standard since there are many engines.
+
+### Javascript Engine
+- **A program that converts JS code into something the computer processor can understand**
+- And it should follow the ECMAScript standard on how the language should work and what features it should have.
+- Node and V8 is written in C++.
+
+### What is Node.JS??
+- **Node JS is a C++ program, with V8 embedded, that is added a wealth of great features to make it suitable to be a server technology
 
 ## 4. Modules Exports and Require
 ### Module
