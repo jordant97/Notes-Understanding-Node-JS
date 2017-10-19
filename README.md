@@ -33,9 +33,30 @@ Table of Content
         - [JSON](#json)
         - [Revealing Module Pattern](#revealing-module-pattern)
         - [Why we can assign a function to modules.export but not export??](#why-we-can-assign-a-function-to-modulesexport-but-not-export)
+    - [5. Events and Event Emitter](#5-events-and-event-emitter)
+        - [Event](#event)
+        - [Event listener](#event-listener)
+        - [Magic String](#magic-string)
+        - [Object.create](#objectcreate)
+        - [.call and .apply](#call-and-apply)
+        - [Syntactic sugar](#syntactic-sugar)
+        - [Classes in ES6](#classes-in-es6)
     - [6. Asynchronous Code, libuv, the event loop, stream files and more](#6-asynchronous-code-libuv-the-event-loop-stream-files-and-more)
         - [Asynchronous](#asynchronous)
         - [Synchronous](#synchronous)
+        - [Callback](#callback)
+        - [What's going on inside Node and why we say that it is async.](#whats-going-on-inside-node-and-why-we-say-that-it-is-async)
+        - [Non-blocking](#non-blocking)
+        - [Buffers](#buffers)
+        - [Stream](#stream)
+        - [Character set](#character-set)
+        - [Character encoding](#character-encoding)
+        - [Error-first callback](#error-first-callback)
+        - [Chunk](#chunk)
+        - [Abstract(Base) class](#abstractbase-class)
+        - [How we will process data in Streams??](#how-we-will-process-data-in-streams)
+        - [Pipe](#pipe)
+        - [Method chaining](#method-chaining)
     - [7. HTTP and being a Web Server](#7-http-and-being-a-web-server)
         - [Protocol](#protocol)
         - [TCP/IP](#tcpip)
@@ -49,6 +70,10 @@ Table of Content
         - [Routing](#routing)
         - [Template](#template)
         - [How to create a server with node](#how-to-create-a-server-with-node)
+        - [API](#api-1)
+        - [Endpoint](#endpoint-1)
+        - [Serialize](#serialize-1)
+        - [Routing](#routing-1)
     - [8. NPM and Node Package Manager](#8-npm-and-node-package-manager)
         - [Package](#package)
         - [Package management system](#package-management-system)
@@ -61,7 +86,10 @@ Table of Content
         - [Middleware](#middleware)
         - [Static](#static)
         - [How to setup a server using Express](#how-to-setup-a-server-using-express)
-        - [Routing](#routing-1)
+        - [Routing](#routing-2)
+        - [REST](#rest)
+    - [10. Javascript JSON and databases](#10-javascript-json-and-databases)
+    - [11. The MEAN Stack](#11-the-mean-stack)
 
 <!-- /TOC -->
 ## Things JS needed in order to manage a server
@@ -373,6 +401,103 @@ Jordan
 - But there is a quirk in JS, when you assign a value to the other reference, it will break the reference. It will points to a new location
 - What we can do is mutate the reference. Meaning that you change the value of the object.
 
+## 5. Events and Event Emitter
+### Event
+- **Something that has happened in our app that we can respond to**
+- In Node, we actually talk about 2 different kinds of event.
+- System events(C++ core using **libuv**) and Custom events(JS core using **Event Emitter**)
+- Event in JS is actually just **an object of properties full of arrays of function**
+- Here's some example code:
+```js
+function Emitter() { //First we create a object constructor
+    this.events = {};
+}
+
+Emitter.prototype.on = function(type, listener) { //We put the functionality of the Emitter in the prototype chain.
+//The 2 main function is on and emit
+
+    this.events[type] = this.events[type] || []; //Check to see whether we have this event type in our event emitter. If no assign an empty array to it.
+    this.events[type].push(listener); //Add the listener to the events type.
+
+}
+
+Emitter.prototype.emit = function(type) { //Emit is to call.
+    if(this.events[type]) { //We check to see if there is such event type in the object.
+        this.events[type].forEach(function(listener) {
+            //We loop through the arra and call the function.
+            listener();
+        })
+    }
+}
+```
+
+### Event listener
+- **The code that respond to an event**
+- In JS's case, the listener will be a function
+
+### Magic String
+- **A string that has some special meaning in our code**
+- This is bad because it makes it easy for a typo to cause a bug, and hard for tools to help us find it.
+- How to solve this problem? (The solution mentioned above is just a coding pattern, it's by no means a rule to follow)
+- Solution: (In code)
+
+```js
+//1. Create a file (config.js)
+
+//2. Create an object in the file
+module.exports = {
+    events = {
+        GREET: 'greet',
+        FILESAVED: 'filesaved',
+        FILEOPENED: 'fileopened'
+    }
+}
+
+//3. Import it in the place you want to use.
+
+//4. The editor (VS Code) will help us autocomplete and even catch  the error.
+```
+
+### Object.create
+- Object.create will create an object and assign the object you passed in as it's prototype.
+- This is an powerful concept cause it allows object to inherits prototype. (I'm not sure whether object created with function constructor do inherit from prototype)
+- Here's an example
+```js
+
+//We create an object call person (Note that this is not a function constructor)
+var person = {
+    firstName: '';
+    lastName: '';
+    greet: function() {
+        console.log(this.firstName + " " + this.lastName);
+    }
+}
+
+var john = Object.create(person);
+john.firstName = "John";
+john.lastName = "Lee";
+john.greet(); //output: John Lee
+```
+
+Here's an visual representation of the concept discussed above.
+![Image of Object.create](./object_create.png)
+
+### .call and .apply
+- It's just another way to **invoke(call) function** (eg: function() == function.call())
+- We can **pass in an obj** with .call & .apply that can change what the **this** is pointing to in the function
+- The difference between .call and .apply is, if there is any other extra arguments that the function accepts, **.apply** accepts it in the form of an array.
+- .call and .apply are used to **imitate superclass**(what we inherits from) in other language.
+
+### Syntactic sugar
+- **A feature that only changes how you type something, but nothing changes under the hood**
+- It's important to understand what's happening under the hood, so we don't make decisions based on flawed assumptions.
+
+### Classes in ES6
+- In ES6, JS introduce the keyword **class**
+- It is just a syntactic sugar for writing object.
+- It allows inheritance by using the keyword **extends**
+- Under the hood it is still creating the same thing. Just different ways to write the same thing.
+
 ## 6. Asynchronous Code, libuv, the event loop, stream files and more
 
 ### Asynchronous
@@ -381,8 +506,123 @@ Node does things asynchronously. V8 does not.
 
 ### Synchronous
 - **One process executing at a time.**
-Javascript is synchronous. Think of it as one line of code executing at a time.
-NodeJS is asynchronous
+- Javascript is synchronous. Think of it as one line of code executing at a time.
+- NodeJS is asynchronous
+- Don't confuse Node with JS
+
+### Callback
+- ** A function passed to some other function, which we assume will be invoked at some point
+- The function 'call back' invoking the function you give it when it is done doing its work.
+
+### What's going on inside Node and why we say that it is async.
+![Image of Async.node](./async_node.png)
+
+- I will try to explain the image above:
+- When we talk about events happening in Node, we are actually talking about 2 different things, 1 is the events happening in C++ core, 1 is the events happening in JS core.
+- In C++, the events are created using **libuv**
+- libuv is used to request something from the OS (open a file, read file, etc)
+- Whatever happens is an event (the internet is slow, the file is opened, etc), and it is placed in a queue
+- There is an event loop that will run in a loop to check whether there is any done events queueing in the queue.
+- libuv sees something is in the queue, and it will process it and it runs a callback
+
+### Non-blocking
+- Doing other things without stopping your programming from running
+- This is made possible by Node's asynchronous nature.
+
+### Buffers
+- A temporary holding spot for data being moved from one place to another
+- Intentionally limited in size
+- Use for gathering data and move it along
+- Think of Youtube video when we say buffering, we are actually waiting for the data to be fully fill the buffer.
+- We can use buffer to do character encoding.
+- In reality, we won't directly deal with buffer.
+
+```js
+//You don't need to import buffer cause it is so important, node make it global to the program
+var buf = new Buffer('Hello', 'utf8');
+console.log(buf);
+console.log(buf.toString());
+console.log(buf.toJSON());
+
+//We can also write data to the buffer
+buf.write('wo');
+```
+
+### Stream
+- A sequence of data made available over time.
+- Pieces of data that eventually combined into a whole.
+- When we stream a movie, we are actually downloading the movie, but in small pieces.
+- Stream is normally combined with buffer, the buffer will sits on the stream and hold a certain size of data and pass it down for the stream to process then repeat.
+
+### Character set
+- A representation of characters as numbers.
+- Each character gets a number. **Unicode** and **ASCII** are character sets.
+- Character set is in **decimal**
+
+### Character encoding
+- How character are stored in binary
+- The numbers (or code points) are converted and stored in binary
+- Eg: **UTF-8**
+- Character encoding is in **binary**
+
+### Error-first callback
+- **Callbacks take an error object as their first parameter**
+- null if no error, otherwise will contain an object defining the error. This is a standard so we know in what order to place our parameters for our callbacks.
+
+### Chunk
+- A piece of data being sent down a stream
+- Data is splitted in chunks and streamed
+
+### Abstract(Base) class
+- A type of constructor you never work directly with, but inherits from
+- We create new custom objects which inherit from the abstract base class
+
+### How we will process data in Streams??
+- Below are steps of how streams will process data
+- 1. Read some of the text file
+- 2. Fill the buffer sitting on the stream
+- 3. Emit the *data* event
+- 4. Run all the listener
+- 5. Keep repeating until the file is end reading
+
+- Example code below:
+```js
+var fs = require('fs');
+
+//This will read the file
+var readable = fs.createReadStream(__dirname + '/greet.txt', {encoding: 'utf8', highWaterMark: 32 * 1024});
+
+//This will write to the file call greetcopy.txt
+var writable = fs.createWriteStream(__dirname + '/greetcopy.txt');
+
+readable.on('data', function(chunk) {
+    writable.write(chunk);
+})
+```
+
+### Pipe
+- **Connecting 2 streams by writing to one stream what is being read from another**
+- In Node you pipe from a Readable stream to a Writable stream (Copying)
+- It is basically what we just did above, but with all the heavy lifting handle by Node
+- Pipe is only available on Readable and duplex (writable and readable) stream.
+- We can actually write to any stream(The internet, database, gzip, etc), not just files.
+- Example code:
+```js
+var fs = require('fs');
+
+//Create a readable stream
+var readable = fs.createReadStream(__dirname + '/greet.txt');
+
+//Create a writable stream
+var writable = fs.createWriteStream(__dirname + '/greetcopy.txt');
+
+//This will return the destination. Since it returns a destination, we can actually pipe it again (If it is a duplex = readable + writable streaem).
+readable.pipe(writable);
+```
+
+### Method chaining
+- **A method return an object so we can keep calling more methods**
+- Sometimes it returns the parent object (called 'cascading') and sometimes some other object
 
 ## 7. HTTP and being a Web Server
 ### Protocol
@@ -468,6 +708,22 @@ var server = http.createServer(function(req, res) {
 server.listen(8000, '127.0.0.1');
 ```
 
+### API
+- **A set of tools for building a software application**
+- Stands for *Application Programming Interface*. On the web the tools are usually made available via a set of URLs which accepts and send only data via HTTP and TCP/IP.
+
+### Endpoint
+- One URL in a Web API
+- Sometimes that endpoint (URL) does multiple things by making choices based on the HTTP request headers.
+
+### Serialize
+- **Translating an object into a format that can be stored or transferred**
+- JSON, CSV, XML, and others are popular. 'Deserialize' is the opposite (converting the format back into an object)
+
+### Routing
+- Mapping HTTP request to content
+- Whether actual files that exist on the server, or not
+
 ## 8. NPM and Node Package Manager
 ### Package
 - Package is just a collection of code that you can use it in your code
@@ -549,4 +805,12 @@ app.get('/person/:id', function(req, res) {
 });
 ```
 
-```css
+### REST
+- An architectural style for building APIs.
+- Stands for 'Representation State Transfer'. We decide that HTTP verbs and URLs mean something.
+
+## 10. Javascript JSON and databases
+
+## 11. The MEAN Stack
+- **The combination of all technologies used to build a piece of software**
+- Your database system, your server side code, your client side code, and everything else.
